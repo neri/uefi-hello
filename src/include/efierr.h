@@ -1,7 +1,8 @@
 #ifndef INCLUDED_EFIERR_H
 #define INCLUDED_EFIERR_H
 
-#define EFI_ERROR(a) (((INTN) (a)) < 0)
+#define EFIWARN(a)                      (a)
+#define EFI_ERROR(a)                    (((INTN) (a)) < 0)
 
 #define EFI_SUCCESS 0
 #define EFI_LOAD_ERROR                  EFIERR(1)
@@ -35,5 +36,10 @@
 #define EFI_END_OF_FILE                 EFIERR(31)
 #define EFI_INVALID_LANGUAGE            EFIERR(32)
 #define EFI_COMPROMISED_DATA            EFIERR(33)
+
+#define EFI_WARN_UNKOWN_GLYPH           EFIWARN(1)
+#define EFI_WARN_DELETE_FAILURE         EFIWARN(2)
+#define EFI_WARN_WRITE_FAILURE          EFIWARN(3)
+#define EFI_WARN_BUFFER_TOO_SMALL       EFIWARN(4)
 
 #endif

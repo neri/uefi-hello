@@ -4,16 +4,16 @@
 require 'rake/clean'
 require 'rake/packagetask'
 
-# case `uname -m`
-# when /i[3456789]86/
-#   ARCH = :x86
-# when /x86.64/
-#   ARCH = :x64
-# when /aarch64/
-#   ARCH = :aa64
-# else
-#   ARCH = :unknown
-# end
+case `uname -m`
+when /i[3456789]86/
+  ARCH = :x86
+when /x86.64/
+  ARCH = :x64
+when /aarch64/
+  ARCH = :aa64
+else
+  ARCH = :unknown
+end
 
 PATH_BIN        = "bin/"
 PATH_SRC        = "src/"
@@ -122,7 +122,7 @@ end
 
 namespace :main do
 
-    %w(x64).each do |arch|
+  %w(x64).each do |arch|
     dependencies = make_efi(arch, 'boot', %w( hello ))
     desc "Build Main"
     task :build => dependencies

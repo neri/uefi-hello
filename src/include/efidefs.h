@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-#define	NULL			0
-
 typedef uint16_t		wchar_t;
 
 #define	EFIAPI
