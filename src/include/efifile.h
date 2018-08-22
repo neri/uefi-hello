@@ -129,7 +129,7 @@ typedef struct {
 	EFI_TIME LastAccessTime;
 	EFI_TIME ModificationTime;
 	UINT64 Attribute;
-	CHAR16 FileName[];
+	CHAR16 FileName[1];
 } EFI_FILE_INFO;
 
 #define EFI_FILE_READ_ONLY 0x0000000000000001
@@ -146,11 +146,11 @@ typedef struct {
 	UINT64 VolumeSize;
 	UINT64 FreeSpace;
 	UINT32 BlockSize;
-	CHAR16 VolumeLabel[];
+	CHAR16 VolumeLabel[1];
 } EFI_FILE_SYSTEM_INFO;
 
 typedef struct {
-	CHAR16 VolumeLabel[];
+	CHAR16 VolumeLabel[1];
 } EFI_FILE_SYSTEM_VOLUME_LABEL;
 
 
