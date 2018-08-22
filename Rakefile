@@ -39,7 +39,7 @@ if RUBY_PLATFORM =~ /darwin/ then
   LD      = ENV['LD'] || "#{LLVM_PREFIX}/bin/lld-link"
 else
   CC      = ENV['CC'] || "clang"
-  LD      = ENV['LD'] || "lld-link-4.0"
+  LD      = ENV['LD'] || "lld-link-6.0"
 end
 CFLAGS  = "-Os -std=c99 -fno-stack-protector -fshort-wchar -mno-red-zone -nostdlibinc -I #{PATH_INC} -Wall -Wpedantic"
 AS      = ENV['AS'] || "nasm"
