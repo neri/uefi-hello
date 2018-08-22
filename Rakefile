@@ -4,15 +4,15 @@
 require 'rake/clean'
 require 'rake/packagetask'
 
-case `uname -m`
+ARCH  = ENV['EFI_ARCH'] || case `uname -m`
 when /i[3456789]86/
-  ARCH = :x86
+  :i386
 when /x86.64/
-  ARCH = :x64
+  :x64
 when /aarch64/
-  ARCH = :aa64
+  :aa64
 else
-  ARCH = :unknown
+  :unknown
 end
 
 PATH_BIN        = "bin/"
@@ -21,7 +21,17 @@ PATH_OBJ        = "obj/"
 PATH_MNT        = "mnt/"
 PATH_EFI_BOOT   = "#{PATH_MNT}EFI/BOOT/"
 PATH_INC        = "#{PATH_SRC}include/"
-PATH_OVMF       = "var/OVMF.fd"
+case ARCH.to_sym
+when :x64
+  PATH_OVMF       = "var/bios64.bin"
+  QEMU            = "qemu-system-x86_64"
+when :i386
+  PATH_OVMF       = "var/bios32.bin"
+  QEMU            = "qemu-system-x86_64"
+else
+  PATH_OVMF       = "var/OVMF.fd"
+  QEMU            = "qemu"
+end
 
 if RUBY_PLATFORM =~ /darwin/ then
   LLVM_PREFIX     = `brew --prefix llvm`.gsub(/\n/, '')
@@ -31,9 +41,9 @@ else
   CC      = ENV['CC'] || "clang"
   LD      = ENV['LD'] || "lld-link-4.0"
 end
-CFLAGS  = "-Os -target x86_64-pc-win32-coff -std=c99 -fno-stack-protector -fshort-wchar -mno-red-zone -nostdlibinc -I #{PATH_INC} -Wall -Wpedantic"
+CFLAGS  = "-Os -std=c99 -fno-stack-protector -fshort-wchar -mno-red-zone -nostdlibinc -I #{PATH_INC} -Wall -Wpedantic"
 AS      = ENV['AS'] || "nasm"
-AFLAGS  = "-s -I #{ PATH_SRC } -f win64"
+AFLAGS  = "-s -I #{ PATH_SRC }"
 LFLAGS  = "-subsystem:efi_application -nodefaultlib -entry:efi_main"
 
 INCS  = [FileList["#{PATH_SRC}*.h"], FileList["#{PATH_INC}*.h"]]
@@ -56,28 +66,47 @@ task :default => [PATH_OBJ, PATH_BIN, TASKS].flatten
 
 desc "Run with QEMU"
 task :run => [:default, PATH_EFI_BOOT, PATH_OVMF] do
-  FileUtils.cp("#{PATH_BIN}bootx64.efi", "#{PATH_EFI_BOOT}BOOTX64.EFI")
-  sh "qemu-system-x86_64 -bios #{ PATH_OVMF } -monitor stdio -drive file=fat:ro:mnt"
+  (efi_arch, efi_suffix) = convert_arch(ARCH)
+  FileUtils.cp("#{PATH_BIN}boot#{efi_suffix}.efi", "#{PATH_EFI_BOOT}boot#{efi_suffix}.efi")
+  sh "#{QEMU} -bios #{PATH_OVMF} -monitor stdio -drive file=fat:ro:mnt"
 end
 
 
+def convert_arch(s)
+  case s.to_sym
+  when :x64
+    ['x86_64', 'x64']
+  when :i386
+    ['i386', 'ia32']
+  when :aa64
+    ['aarch64', 'aa64']
+  else
+    [s.to_s, s.to_s]
+  end
+end
+
 def make_efi(cputype, target, src_tokens, options = {})
+
+  (efi_arch, efi_suffix) = convert_arch(cputype)
+
+  cf_target = "-target #{efi_arch}-pc-win32-coff"
+
   case cputype.to_sym
   when :x64
-    efi_arch = 'x86_64'
-    efi_suffix = 'x64'
-  when :x86
-    efi_arch = 'ia32'
-    efi_suffix = 'ia32'
-  else
-    efi_arch = cputype.to_s
-    efi_suffix = efi_arch
+    af_target = "-f win64"
+  when :i386
+    af_target = "-f win32"
   end
 
   path_obj      = "#{PATH_OBJ}#{efi_suffix}/"
   directory path_obj
 
-  efi_obj_so    = "#{path_obj}#{target}.so"
+  if options[:base]
+    path_src_p    = "#{PATH_SRC}#{options[:base]}/"
+  else
+    path_src_p    = "#{PATH_SRC}"
+  end
+
   if options[:no_suffix]
     efi_output    = "#{PATH_BIN}#{target}.efi"
   else
@@ -88,8 +117,19 @@ def make_efi(cputype, target, src_tokens, options = {})
     if s !~ /\.\w+/
       s += '.c'
     end
+    base = File.basename(s, '.*')
+    ext = File.extname(s)
     if s !~ /\//
-      s = "#{PATH_SRC}#{s}"
+      s = [
+        "#{path_src_p}#{s}",
+        "#{path_src_p}#{base}-#{efi_suffix}#{ext}",
+        "#{PATH_SRC}#{s}",
+        "#{PATH_SRC}#{base}-#{efi_suffix}#{ext}",
+      ].find do |p|
+        if File.exist?(p)
+          p
+        end
+      end
     end
     s
   end
@@ -101,11 +141,11 @@ def make_efi(cputype, target, src_tokens, options = {})
     case File.extname(src)
     when '.c'
       file obj => [ src, INCS, path_obj ].flatten do |t|
-        sh "#{ CC } #{ CFLAGS} -c -o #{ t.name } #{ src }"
+        sh "#{ CC } #{ cf_target } #{ CFLAGS} -c -o #{ t.name } #{ src }"
       end
     when '.asm'
       file obj => [ src, path_obj ] do | t |
-        sh "#{ AS } #{ AFLAGS } -o #{ t.name } #{ src }"
+        sh "#{ AS } #{ af_target } #{ AFLAGS } -o #{ t.name } #{ src }"
       end
     end
 
@@ -122,7 +162,7 @@ end
 
 namespace :main do
 
-  %w(x64).each do |arch|
+  [ARCH].each do |arch|
     dependencies = make_efi(arch, 'boot', %w( hello ))
     desc "Build Main"
     task :build => dependencies
