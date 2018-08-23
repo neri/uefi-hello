@@ -837,7 +837,7 @@ VOID
 	IN EFI_STATUS ResetStatus,
 	IN UINTN DataSize,
 	IN VOID *ResetData OPTIONAL
-);
+) __attribute__((noreturn));
 
 typedef
 EFI_STATUS

@@ -41,6 +41,10 @@ typedef struct _EFI_GUID {
 	UINT8	Data4[8];
 } EFI_GUID;
 
+#if defined(__x86_64__) || defined(__aarch64__)
 #define EFIERR(a)		(0x8000000000000000 | a)
+#elif defined(__i386__) || defined(__arm__)
+#define EFIERR(a)		(0x80000000 | a)
+#endif
 
 #endif
