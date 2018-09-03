@@ -39,8 +39,6 @@ typedef struct EFI_CONFIGURATION_TABLE {
 #define EFI_ACPI_TABLE_GUID \
 	{0x8868e871,0xe4f1,0x11d3, {0xbc,0x22,0x00,0x80,0xc7,0x3c,0x88,0x81}}
 #define EFI_ACPI_20_TABLE_GUID EFI_ACPI_TABLE_GUID
-#define ACPI_TABLE_GUID \
-	{0xeb9d2d30,0x2d88,0x11d3, {0x9a,0x16,0x00,0x90,0x27,0x3f,0xc1,0x4d}}
 #define ACPI_10_TABLE_GUID ACPI_TABLE_GUID
 
 
@@ -278,7 +276,7 @@ typedef
 EFI_STATUS
 (EFIAPI *EFI_INSTALL_PROTOCOL_INTERFACE) (
 	IN OUT EFI_HANDLE *Handle,
-	IN EFI_GUID *Protocol,
+	IN CONST EFI_GUID *Protocol,
 	IN EFI_INTERFACE_TYPE InterfaceType,
 	IN VOID *Interface
 );
@@ -287,7 +285,7 @@ typedef
 EFI_STATUS
 (EFIAPI *EFI_UNINSTALL_PROTOCOL_INTERFACE) (
 	IN EFI_HANDLE Handle,
-	IN EFI_GUID *Protocol,
+	IN CONST EFI_GUID *Protocol,
 	IN VOID *Interface
 );
 
@@ -295,7 +293,7 @@ typedef
 EFI_STATUS
 (EFIAPI *EFI_REINSTALL_PROTOCOL_INTERFACE) (
 	IN EFI_HANDLE Handle,
-	IN EFI_GUID *Protocol,
+	IN CONST EFI_GUID *Protocol,
 	IN VOID *OldInterface,
 	IN VOID *NewInterface
 );
@@ -303,7 +301,7 @@ EFI_STATUS
 typedef
 EFI_STATUS
 (EFIAPI *EFI_REGISTER_PROTOCOL_NOTIFY) (
-	IN EFI_GUID *Protocol,
+	IN CONST EFI_GUID *Protocol,
 	IN EFI_EVENT Event,
 	OUT VOID **Registration
 );
@@ -312,7 +310,7 @@ typedef
 EFI_STATUS
 (EFIAPI *EFI_LOCATE_HANDLE) (
 	IN EFI_LOCATE_SEARCH_TYPE SearchType,
-	IN EFI_GUID *Protocol OPTIONAL,
+	IN CONST EFI_GUID *Protocol OPTIONAL,
 	IN VOID *SearchKey OPTIONAL,
 	IN OUT UINTN *BufferSize,
 	OUT EFI_HANDLE *Buffer
@@ -322,14 +320,14 @@ typedef
 EFI_STATUS
 (EFIAPI *EFI_HANDLE_PROTOCOL) (
 	IN EFI_HANDLE Handle,
-	IN EFI_GUID *Protocol,
+	IN CONST EFI_GUID *Protocol,
 	OUT VOID **Interface
 );
 
 typedef
 EFI_STATUS
 (EFIAPI *EFI_LOCATE_DEVICE_PATH) (
-	IN EFI_GUID *Protocol,
+	IN CONST EFI_GUID *Protocol,
 	IN OUT EFI_DEVICE_PATH_PROTOCOL **DevicePath,
 	OUT EFI_HANDLE *Device
 );
@@ -338,7 +336,7 @@ typedef
 EFI_STATUS
 (EFIAPI *EFI_OPEN_PROTOCOL) (
 	IN EFI_HANDLE Handle,
-	IN EFI_GUID *Protocol,
+	IN CONST EFI_GUID *Protocol,
 	OUT VOID **Interface OPTIONAL,
 	IN EFI_HANDLE AgentHandle,
 	IN EFI_HANDLE ControllerHandle,
@@ -349,7 +347,7 @@ typedef
 EFI_STATUS
 (EFIAPI *EFI_CLOSE_PROTOCOL) (
 	IN EFI_HANDLE Handle,
-	IN EFI_GUID *Protocol,
+	IN CONST EFI_GUID *Protocol,
 	IN EFI_HANDLE AgentHandle,
 	IN EFI_HANDLE ControllerHandle
 );
@@ -358,7 +356,7 @@ typedef
 EFI_STATUS
 (EFIAPI *EFI_OPEN_PROTOCOL_INFORMATION) (
 	IN EFI_HANDLE Handle,
-	IN EFI_GUID *Protocol,
+	IN CONST EFI_GUID *Protocol,
 	OUT EFI_OPEN_PROTOCOL_INFORMATION_ENTRY **EntryBuffer,
 	OUT UINTN *EntryCount
 );
@@ -392,7 +390,7 @@ typedef
 EFI_STATUS
 (EFIAPI *EFI_LOCATE_HANDLE_BUFFER) (
 	IN EFI_LOCATE_SEARCH_TYPE SearchType,
-	IN EFI_GUID *Protocol OPTIONAL,
+	IN CONST EFI_GUID *Protocol OPTIONAL,
 	IN VOID *SearchKey OPTIONAL,
 	IN OUT UINTN *NoHandles,
 	OUT EFI_HANDLE **Buffer
@@ -401,7 +399,7 @@ EFI_STATUS
 typedef
 EFI_STATUS
 (EFIAPI *EFI_LOCATE_PROTOCOL) (
-	IN EFI_GUID *Protocol,
+	IN CONST EFI_GUID *Protocol,
 	IN VOID *Registration OPTIONAL,
 	OUT VOID **Interface
 );
@@ -521,7 +519,7 @@ EFI_STATUS
 typedef
 EFI_STATUS
 (EFIAPI *EFI_INSTALL_CONFIGURATION_TABLE) (
-	IN EFI_GUID *Guid,
+	IN CONST EFI_GUID *Guid,
 	IN VOID *Table
 );
 
@@ -666,8 +664,8 @@ typedef struct {
 typedef
 EFI_STATUS
 (EFIAPI *EFI_GET_VARIABLE) (
-	IN CHAR16 *VariableName,
-	IN EFI_GUID *VendorGuid,
+	IN CONST CHAR16 *VariableName,
+	IN CONST EFI_GUID *VendorGuid,
 	OUT UINT32 *Attributes OPTIONAL,
 	IN OUT UINTN *DataSize,
 	OUT VOID *Data OPTIONAL
@@ -684,8 +682,8 @@ EFI_STATUS
 typedef
 EFI_STATUS
 (EFIAPI *EFI_SET_VARIABLE) (
-	IN CHAR16 *VariableName,
-	IN EFI_GUID *VendorGuid,
+	IN CONST CHAR16 *VariableName,
+	IN CONST EFI_GUID *VendorGuid,
 	IN UINT32 Attributes,
 	IN UINTN DataSize,
 	IN VOID *Data
