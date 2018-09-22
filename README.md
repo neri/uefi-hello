@@ -33,13 +33,13 @@ $ rake ARCH=aa64
 $ rake run ARCH=aa64
 ```
 
-### aarch64 (arm)
+### aarch32 (arm32)
 
 * Currently not supported :cry:
 
 ## License
 
-* PUBLIC DOMAIN
+* PUBLIC DOMAIN/WTFL
 
 ## References
 
