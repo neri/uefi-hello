@@ -18,7 +18,7 @@ typedef struct _acpi_rsd_ptr_t {
 typedef struct _acpi_gas_t {
     uint8_t     address_space_id, bit_width, bit_offset, accesss_size;
     uint64_t    address;
-} acpi_gas_t;
+} __attribute__((packed)) acpi_gas_t;
 
 typedef struct _acpi_header_t {
     char        signature[4];
@@ -73,8 +73,11 @@ typedef struct _acpi_fadt_t {
 //    uint64_t    X_FIRMWARE_CTL, X_DSDT;
 } __attribute__((packed)) acpi_fadt_t;
 
-#define ACPI_FADT_IAPC_8042     0x0002 /* PS2 present */
-#define ACPI_FADT_IAPC_VGA_NP   0x0004 /* VGA not present */
+#define ACPI_FADT_SIGNATURE         "FACP"
+#define ACPI_FADT_IAPC_LEGACY       0x0001 /* Legacy Devices */
+#define ACPI_FADT_IAPC_8042         0x0002 /* PS2 present */
+#define ACPI_FADT_IAPC_NO_VGA       0x0004 /* VGA not present */
+#define ACPI_FADT_IAPC_NO_MSI       0x0008 /* MSI not supported */
 
 
 //  MADT/APIC Multiple APIC Description Table
@@ -85,7 +88,9 @@ typedef struct _acpi_madt_t {
     uint8_t     Structure[];
 } acpi_madt_t;
 
-#define ACPI_MADT_PCAT_COMPAT   0x0001 /* 8259 PIC Present */
+#define ACPI_MADT_SIGNATURE         "APIC"
+#define ACPI_MADT_PCAT_COMPAT       0x0001 /* 8259 PIC Present */
+
 
 //  BGRT Boot Graphics Resource Table
 typedef struct _acpi_bgrt_t {
@@ -96,9 +101,23 @@ typedef struct _acpi_bgrt_t {
     uint32_t    Image_Offset_X, Image_Offset_Y;
 } __attribute__((packed)) acpi_bgrt_t;
 
+#define ACPI_BGRT_SIGNATURE         "BGRT"
 #define ACPI_BGRT_VERSION_CURRENT   0x0001
 #define ACPI_BGRT_STATUS_DISPLAYED  0x01
 #define ACPI_BGRT_IMAGE_TYPE_BITMAP 0x00
+
+
+//  HPET High Precision Event Timer
+typedef struct {
+    acpi_header_t   Header;
+    uint32_t event_timer_block_id;
+    acpi_gas_t address;
+    uint8_t hpet_number;
+    uint16_t minimum_tick;
+    uint8_t page_protection;
+} __attribute__((packed)) acpi_hpet_t;
+
+#define ACPI_HPET_SIGNATURE         "HPET"
 
 
 #endif
