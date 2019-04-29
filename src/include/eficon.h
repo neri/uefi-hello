@@ -1,5 +1,4 @@
-#ifndef INCLUDED_EFICON_H
-#define INCLUDED_EFICON_H
+#pragma once
 
 #include "efidefs.h"
 
@@ -694,6 +693,3 @@ typedef struct _EFI_CONSOLE_CONTROL_PROTOCOL {
         EFI_CONSOLE_CONTROL_PROTOCOL_SET_MODE SetMode;
         EFI_CONSOLE_CONTROL_PROTOCOL_LOCK_STD_IN LockStdIn;
 } EFI_CONSOLE_CONTROL_PROTOCOL;
-
-
-#endif

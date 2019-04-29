@@ -1,9 +1,8 @@
 // ACPI.h
-#ifndef INCLUDED_ACPI_H
-#define INCLUDED_ACPI_H
+#pragma once
 
 
-typedef struct _acpi_rsd_ptr_t {
+typedef struct acpi_rsd_ptr_t {
     char       signature[8];
     uint8_t    checksum;
     char       oemid[6];
@@ -15,12 +14,12 @@ typedef struct _acpi_rsd_ptr_t {
     uint8_t    reserved[3];
 } __attribute__((packed)) acpi_rsd_ptr_t;
 
-typedef struct _acpi_gas_t {
+typedef struct acpi_gas_t {
     uint8_t     address_space_id, bit_width, bit_offset, accesss_size;
     uint64_t    address;
 } __attribute__((packed)) acpi_gas_t;
 
-typedef struct _acpi_header_t {
+typedef struct acpi_header_t {
     char        signature[4];
     uint32_t    length;
     int8_t      revision;
@@ -34,21 +33,21 @@ typedef struct _acpi_header_t {
 
 
 //  RSDT Root System Description Table
-typedef struct _acpi_rsdt_t {
+typedef struct acpi_rsdt_t {
     acpi_header_t   Header;
     uint32_t    Entry[];
 } acpi_rsdt_t;
 
 
 //  XSDT Extended System Description Table
-typedef struct _acpi_xsdt_t {
+typedef struct acpi_xsdt_t {
     acpi_header_t   Header;
     uint64_t    Entry[];
 } __attribute__((packed)) acpi_xsdt_t;
 
 
 //  FADT/FACP Fixed ACPI Descriptor Table
-typedef struct _acpi_fadt_t {
+typedef struct acpi_fadt_t {
     acpi_header_t   Header;
     uint32_t    FIRMWARE_CTL;
     uint32_t    DSDT;
@@ -70,18 +69,40 @@ typedef struct _acpi_fadt_t {
     uint8_t     RESET_VALUE;
     uint16_t    ARM_BOOT_ARCH;
     uint8_t     FADT_Minor_Version;
-//    uint64_t    X_FIRMWARE_CTL, X_DSDT;
+    uint64_t    X_FIRMWARE_CTL, X_DSDT;
+    acpi_gas_t  X_PM1a_EVT_BLK, X_PM1b_EVT_BLK, X_PM1a_CNT_BLK, X_PM1b_CNT_BLK;
+    acpi_gas_t  X_PM2_CNT_BLK, X_PM_TMR_BLK, X_GPE0_BLK, X_GPE1_BLK;
+    acpi_gas_t  SLEEP_CONTROL_REG, SLEEP_STATUS_REG;
+    uint64_t    HYPERVISOR_VENDOR_IDENTITY;
 } __attribute__((packed)) acpi_fadt_t;
 
 #define ACPI_FADT_SIGNATURE         "FACP"
+#define ACPI_FADT_TMR_VAL_EXT       0x00000100 /* Timer is 32bit */
+#define ACPI_FADT_RESET_REG_SUP     0x00000400 /* RESET_REG supported */
+#define ACPI_FADT_HW_REDUCED_ACPI   0x00100000 /* HW reduced ACPI */
 #define ACPI_FADT_IAPC_LEGACY       0x0001 /* Legacy Devices */
 #define ACPI_FADT_IAPC_8042         0x0002 /* PS2 present */
 #define ACPI_FADT_IAPC_NO_VGA       0x0004 /* VGA not present */
 #define ACPI_FADT_IAPC_NO_MSI       0x0008 /* MSI not supported */
 
+#define ACPI_PM1_SCI_EN             0x0001
+#define ACPI_PM1_SLP_EN             0x2000
+#define ACPI_SCR_SLP_EN             0x20
+
+#define ACPI_PM_TIMER_FREQ          3579545
+
+
+// DSDT Differentiated System Description Table
+typedef struct acpi_dsdt_t {
+    acpi_header_t   Header;
+    uint8_t     Structure[];
+} acpi_dsdt_t;
+
+#define ACPI_DSDT_SIGNATURE         "DSDT"
+
 
 //  MADT/APIC Multiple APIC Description Table
-typedef struct _acpi_madt_t {
+typedef struct acpi_madt_t {
     acpi_header_t   Header;
     uint32_t    lapicaddr;
     uint32_t    Flags;
@@ -93,10 +114,10 @@ typedef struct _acpi_madt_t {
 
 
 //  BGRT Boot Graphics Resource Table
-typedef struct _acpi_bgrt_t {
+typedef struct acpi_bgrt_t {
     acpi_header_t   Header;
     uint16_t    Version;
-    uint8_t     Starus, Image_Type;
+    uint8_t     Status, Image_Type;
     uint64_t    Image_Address;
     uint32_t    Image_Offset_X, Image_Offset_Y;
 } __attribute__((packed)) acpi_bgrt_t;
@@ -118,6 +139,3 @@ typedef struct {
 } __attribute__((packed)) acpi_hpet_t;
 
 #define ACPI_HPET_SIGNATURE         "HPET"
-
-
-#endif

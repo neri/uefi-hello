@@ -1,7 +1,7 @@
-#ifndef INCLUDED_EFIDEFS_H
-#define INCLUDED_EFIDEFS_H
+#pragma once
 
 #include <stdint.h>
+#include <stddef.h>
 
 typedef uint16_t		wchar_t;
 
@@ -45,6 +45,4 @@ typedef struct _EFI_GUID {
 #define EFIERR(a)		(0x8000000000000000 | a)
 #elif defined(__i386__) || defined(__arm__)
 #define EFIERR(a)		(0x80000000 | a)
-#endif
-
 #endif

@@ -1,5 +1,4 @@
-#ifndef INCLUDED_EFIERR_H
-#define INCLUDED_EFIERR_H
+#pragma once
 
 #define EFIWARN(a)                      (a)
 #define EFI_ERROR(a)                    (((INTN) (a)) < 0)
@@ -41,5 +40,3 @@
 #define EFI_WARN_DELETE_FAILURE         EFIWARN(2)
 #define EFI_WARN_WRITE_FAILURE          EFIWARN(3)
 #define EFI_WARN_BUFFER_TOO_SMALL       EFIWARN(4)
-
-#endif

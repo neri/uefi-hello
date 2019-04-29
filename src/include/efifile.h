@@ -1,5 +1,4 @@
-#ifndef INCLUDED_EFIFILE_H
-#define INCLUDED_EFIFILE_H
+#pragma once
 
 #include "efidefs.h"
 
@@ -406,7 +405,3 @@ typedef struct _EFI_FILE_PROTOCOL {
 	EFI_FILE_WRITE_EX WriteEx;
 	EFI_FILE_FLUSH_EX FlushEx;
 } EFI_FILE_PROTOCOL;
-
-
-
-#endif
